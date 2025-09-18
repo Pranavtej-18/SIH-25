@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Protexa</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            color: white;
+            padding: 1rem 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #ecf0f1;
+            
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            transition: color 0.3s;
+            font-weight: 500;
+        }
+
+        .nav-links a:hover {
+            color: #f39c12;
+            font-size: 1.1rem;
+        }
+
+        .menu-toggle {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+        }
+
+        .menu-toggle span {
+            width: 25px;
+            height: 3px;
+            background: white;
+            margin: 3px 0;
+            transition: 0.3s;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(rgba(52, 152, 219, 0.8), rgba(44, 62, 80, 0.8)), 
+                        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600"><rect fill="%23e8f4fd" width="1200" height="600"/><circle fill="%2374b9ff" cx="200" cy="150" r="50" opacity="0.3"/><circle fill="%23fd79a8" cx="800" cy="400" r="60" opacity="0.3"/><circle fill="%2300b894" cx="1000" cy="200" r="40" opacity="0.3"/></svg>');
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            position: relative;
+        }
+
+        .hero-content {
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .hero h2 {
+            font-size: 1.8rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+
+        .cta-button {
+            background: linear-gradient(45deg, #e74c3c, #f39c12);
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            text-decoration: none;
+            display: inline-block;
+            font-weight: bold;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        /* Main Content Sections */
+        .section {
+            padding: 5rem 0;
+        }
+
+        .section-alt {
+            background: #f8f9fa;
+        }
+
+        .section h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            color: #2c3e50;
+        }
+
+        .section p {
+            font-size: 1.2rem;
+            text-align: center;
+            margin-bottom: 3rem;
+            color: #7f8c8d;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Cards */
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            text-align: center;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+
+        .card-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 1rem;
+            background: linear-gradient(45deg, #3498db, #2ecc71);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+        }
+
+        .card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #2c3e50;
+        }
+
+        .card p {
+            color: #7f8c8d;
+            text-align: left;
+            font-size: 1rem;
+            margin: 0;
+        }
+
+        /* Activities Section */
+        .activities {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .activities h2 {
+            color: white;
+        }
+
+        .activity-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .activity-item {
+            background: rgba(255,255,255,0.1);
+            /* backdrop-filter: blur(10px); */
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .activity-item:hover {
+            transform: scale(1.05);
+        }
+
+        .activity-item h3 {
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+
+        /* Statistics */
+        .stats {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .stat-item h3 {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+            color: #3498db;
+        }
+
+        .stat-item p {
+            font-size: 1.1rem;
+            margin: 0;
+        }
+
+        /* Footer */
+        footer {
+            background: #34495e;
+            color: white;
+            padding: 3rem 0 1rem;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h3 {
+            margin-bottom: 1rem;
+            color: #3498db;
+        }
+
+        .footer-section a {
+            color: #ecf0f1;
+            text-decoration: none;
+            display: block;
+            margin: 0.5rem 0;
+            transition: color 0.3s;
+        }
+
+        .footer-section a:hover {
+            color: #3498db;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid #7f8c8d;
+            color: #bdc3c7;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            opacity: 0;
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background: rgba(52, 152, 219, 0.95);
+                flex-direction: column;
+                padding: 1rem;
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .menu-toggle {
+                display: flex;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero h2 {
+                font-size: 1.4rem;
+            }
+
+            .section h2 {
+                font-size: 2rem;
+            }
+
+            .cards {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Accessibility */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        /* Focus styles for accessibility */
+        button:focus, a:focus {
+            outline: 3px solid #f39c12;
+            outline-offset: 2px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="container">
+            <div class="logo">Protexa</div>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#activities">What's On</a></li>
+                <li><a href="#contact">Contact</a></li>
+                <li><a href="#partnerships">Partnerships</a></li>
+                <li><a href="Login.html">Login</a></li>
+            </ul>
+            <div class="menu-toggle" onclick="toggleMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section id="home" class="hero">
+            <div class="hero-content">
+                <h1>The Beacon of Disability Inclusion</h1>
+                <h2>For Singapore and Beyond</h2>
+                <a href="#about" class="cta-button">Discover More</a>
+            </div>
+        </section>
+
+        <section id="about" class="section">
+            <div class="container">
+                <h2>Welcome to Enabling Village</h2>
+                <p>A vibrant hub for inclusive dining, wellness, and retail—celebrating diverse abilities and fostering sustainable, empowered communities.</p>
+                
+                <div class="cards">
+                    <div class="card fade-in">
+                        <div class="card-icon">🏢</div>
+                        <h3>Inclusive Spaces</h3>
+                        <p>Our thoughtfully designed spaces ensure accessibility for everyone, creating environments where all abilities are celebrated and supported.</p>
+                    </div>
+                    <div class="card fade-in">
+                        <div class="card-icon">🤝</div>
+                        <h3>Community Connection</h3>
+                        <p>We bring together diverse communities, fostering understanding and creating lasting connections between people of all abilities.</p>
+                    </div>
+                    <div class="card fade-in">
+                        <div class="card-icon">💡</div>
+                        <h3>Innovation Hub</h3>
+                        <p>A collaborative space for co-creation and prototyping, unlocking possibilities through partnerships that empower persons with disabilities.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="activities" class="section activities">
+            <div class="container">
+                <h2>What's On</h2>
+                <p>Connecting communities and celebrating diverse abilities through inclusive experiences</p>
+                
+                <div class="activity-grid">
+                    <div class="activity-item">
+                        <h3>🎨 Creative Workshops</h3>
+                        <p>Art, music, and craft sessions designed for all abilities</p>
+                    </div>
+                    <div class="activity-item">
+                        <h3>🏃‍♀️ Adaptive Sports</h3>
+                        <p>Inclusive sporting activities and fitness programs</p>
+                    </div>
+                    <div class="activity-item">
+                        <h3>🎭 Cultural Events</h3>
+                        <p>Performances and celebrations showcasing diverse talents</p>
+                    </div>
+                    <div class="activity-item">
+                        <h3>🧠 Skills Training</h3>
+                        <p>Professional development and life skills workshops</p>
+                    </div>
+                    <div class="activity-item">
+                        <h3>🍽️ Community Dining</h3>
+                        <p>Shared meals and cooking experiences for everyone</p>
+                    </div>
+                    <div class="activity-item">
+                        <h3>💼 Employment Fair</h3>
+                        <p>Job opportunities and career guidance sessions</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="tenants" class="section section-alt">
+            <div class="container">
+                <h2>Our Tenants</h2>
+                <p>Celebrate with our partner enterprises to advance disability inclusion</p>
+                
+                <div class="cards">
+                    <div class="card">
+                        <div class="card-icon">🍕</div>
+                        <h3>Inclusive Dining</h3>
+                        <p>Restaurants and cafes that provide employment opportunities and accessible dining experiences for everyone.</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">🛍️</div>
+                        <h3>Social Enterprises</h3>
+                        <p>Retail spaces showcasing products created by persons with disabilities, supporting entrepreneurship and creativity.</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">💆‍♀️</div>
+                        <h3>Wellness Services</h3>
+                        <p>Health and wellness services designed with accessibility in mind, promoting well-being for all community members.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section stats">
+            <div class="container">
+                <h2>Our Impact</h2>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <h3 id="counter1">500+</h3>
+                        <p>Community Members Served</p>
+                    </div>
+                    <div class="stat-item">
+                        <h3 id="counter2">50+</h3>
+                        <p>Partner Organizations</p>
+                    </div>
+                    <div class="stat-item">
+                        <h3 id="counter3">200+</h3>
+                        <p>Employment Opportunities Created</p>
+                    </div>
+                    <div class="stat-item">
+                        <h3 id="counter4">1000+</h3>
+                        <p>Events & Activities Hosted</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="partnerships" class="section">
+            <div class="container">
+                <h2>Partnerships</h2>
+                <p>A collaborative space for co-creation and prototyping – unlocking the possibilities of partnerships that empower persons with disabilities through inclusive services, experiences and prototypes.</p>
+                
+                <div class="cards">
+                    <div class="card">
+                        <div class="card-icon">🏛️</div>
+                        <h3>Government Agencies</h3>
+                        <p>Working with public sector organizations to develop inclusive policies and programs that benefit the disability community.</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">🏢</div>
+                        <h3>Corporate Partners</h3>
+                        <p>Collaborating with businesses to create inclusive workplaces and accessible products and services.</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">🎓</div>
+                        <h3>Educational Institutions</h3>
+                        <p>Partnering with schools and universities to promote inclusive education and research initiatives.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer id="contact">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Contact Us</h3>
+                    <p>📍 20 Lengkok Bahru, Singapore 159053</p>
+                    <p>📞 +65 6123 4567</p>
+                    <p>✉️ info@enablingvillage.sg</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <a href="#about">About Us</a>
+                    <a href="#activities">What's On</a>
+                    <a href="#tenants">Our Tenants</a>
+                    <a href="#partnerships">Partnerships</a>
+                </div>
+                <div class="footer-section">
+                    <h3>Get Involved</h3>
+                    <a href="#">Volunteer Opportunities</a>
+                    <a href="#">Donate</a>
+                    <a href="#">Partner With Us</a>
+                    <a href="#">Newsletter</a>
+                </div>
+                <div class="footer-section">
+                    <h3>Resources</h3>
+                    <a href="#">Accessibility Guide</a>
+                    <a href="#">Support Services</a>
+                    <a href="#">Community Programs</a>
+                    <a href="#">FAQ</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Enabling Village Singapore. All rights reserved. | A beacon of disability inclusion for Singapore and beyond.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile menu toggle
+        function toggleMenu() {
+            const navLinks = document.querySelector('.nav-links');
+            navLinks.classList.toggle('active');
+        }
+
+        // Smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Intersection Observer for animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animationDelay = '0.1s';
+                    entry.target.classList.add('fade-in');
+                }
+            });
+        }, observerOptions);
+
+        // Observe all cards
+        document.querySelectorAll('.card').forEach(card => {
+            observer.observe(card);
+        });
+
+        // Counter animation for stats
+        function animateCounter(element, target) {
+            let current = 0;
+            const increment = target / 50;
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    current = target;
+                    clearInterval(timer);
+                }
+                element.textContent = Math.floor(current) + '+';
+            }, 50);
+        }
+
+        // Stats counter observer
+        const statsObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const counter1 = document.getElementById('counter1');
+                    const counter2 = document.getElementById('counter2');
+                    const counter3 = document.getElementById('counter3');
+                    const counter4 = document.getElementById('counter4');
+                    
+                    animateCounter(counter1, 500);
+                    animateCounter(counter2, 50);
+                    animateCounter(counter3, 200);
+                    animateCounter(counter4, 1000);
+                    
+                    statsObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.5 });
+
+        const statsSection = document.querySelector('.stats');
+        if (statsSection) {
+            statsObserver.observe(statsSection);
+        }
+
+        // Header background on scroll
+        window.addEventListener('scroll', () => {
+            const header = document.querySelector('header');
+            if (window.scrollY > 100) {
+                header.style.background = 'rgba(44, 62, 80, 0.95)';
+                header.style.backdropFilter = 'blur(10px)';
+            } else {
+                header.style.background = 'linear-gradient(135deg, #2c3e50, #3498db)';
+                header.style.backdropFilter = 'none';
+            }
+        });
+
+        // Accessibility: Skip to content
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Tab' && e.target === document.body) {
+                const skipLink = document.createElement('a');
+                skipLink.href = '#main';
+                skipLink.textContent = 'Skip to main content';
+                skipLink.className = 'sr-only';
+                skipLink.style.position = 'absolute';
+                skipLink.style.top = '10px';
+                skipLink.style.left = '10px';
+                skipLink.style.zIndex = '9999';
+                skipLink.style.background = '#333';
+                skipLink.style.color = 'white';
+                skipLink.style.padding = '10px';
+                document.body.appendChild(skipLink);
+                skipLink.focus();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Government Login - Drop Shield</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 400px;
+            border: 1px solid #000;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .login-toggle {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            justify-content: center;
+        }
+
+        .toggle-btn {
+            padding: 0.5rem 1.5rem;
+            border: none;
+            background: none;
+            color: #7f8c8d;
+            font-size: 1.1rem;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .toggle-btn.active {
+            color: #2c3e50;
+            font-weight: bold;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+            font-weight: bold;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .login-btn {
+            background: linear-gradient(45deg, #e74c3c, #f39c12);
+            color: white;
+            padding: 1rem;
+            border: none;
+            border-radius: 8px;
+            width: 100%;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .error-message {
+            color: #e74c3c;
+            font-size: 0.8rem;
+            margin-top: 0.3rem;
+            display: none;
+        }
+
+        .success-message {
+            color: #27ae60;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            padding: 0.5rem;
+            background: #d5f4e6;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .form-group.success input,
+        .form-group.success select {
+            border-color: #27ae60;
+        }
+
+        .form-group.error input,
+        .form-group.error select {
+            border-color: #e74c3c;
+        }
+
+        .loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        .loading .login-btn {
+            background: #95a5a6;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <div class="login-toggle">
+                <button class="toggle-btn active" onclick="toggleForm('login')">Login</button>
+                <button class="toggle-btn" onclick="toggleForm('signup')">Sign Up</button>
+            </div>
+        </div>
+
+        <!-- Login Form -->
+        <form id="loginForm" onsubmit="return validateLoginForm(event)">
+            <div class="form-group">
+                <label for="loginState">Region</label>
+                <select id="loginState" required>
+                    <option value="">Select Region</option>
+                    <option value="North">North Region</option>
+                    <option value="South">South Region</option>
+                    <option value="East">East Region</option>
+                    <option value="West">West Region</option>
+                    <option value="Central">Central Region</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="govId">Regional ID</label>
+                <input type="text" id="govId" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" required>
+            </div>
+
+            <button type="submit" class="login-btn">Login</button>
+        </form>
+
+        <!-- Signup Form -->
+        <form id="signupForm" style="display: none;" onsubmit="return validateSignupForm(event)">
+            <div class="form-group">
+                <label for="signupState">Region</label>
+                <select id="signupState" required>
+                    <option value="">Select Region</option>
+                    <option value="North">North Region</option>
+                    <option value="South">South Region</option>
+                    <option value="East">East Region</option>
+                    <option value="West">West Region</option>
+                    <option value="Central">Central Region</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="role">Role</label>
+                <select id="role" required>
+                    <option value="">Select Role</option>
+                    <option value="regional_secretary">Regional Secretary</option>
+                    <option value="regional_director">Regional Director</option>
+                    <option value="regional_officer">Regional Officer</option>
+                    <option value="district_coordinator">District Coordinator</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="name">Full Name</label>
+                <input type="text" id="name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="empId">Employee ID</label>
+                <input type="text" id="empId" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Official Email</label>
+                <input type="email" id="email" required pattern=".*@gov\.in$">
+            </div>
+
+            <div class="form-group">
+                <label for="signupPassword">Password</label>
+                <input type="password" id="signupPassword" required>
+            </div>
+
+            <button type="submit" class="login-btn">Create Account</button>
+        </form>
+    </div>
+
+    <script>
+        function toggleForm(formType) {
+            const loginForm = document.getElementById('loginForm');
+            const signupForm = document.getElementById('signupForm');
+            const buttons = document.querySelectorAll('.toggle-btn');
+
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            if (formType === 'login') {
+                loginForm.style.display = 'block';
+                signupForm.style.display = 'none';
+            } else {
+                loginForm.style.display = 'none';
+                signupForm.style.display = 'block';
+            }
+        }
+
+        function validateLoginForm(event) {
+            event.preventDefault();
+            
+            const form = event.target;
+            const state = document.getElementById('loginState').value;
+            const govId = document.getElementById('govId').value;
+            const password = document.getElementById('password').value;
+            
+            // Clear previous errors
+            clearFormErrors();
+            
+            let isValid = true;
+            
+            // Validate region
+            if (!state) {
+                showFieldError('loginState', 'Please select a region');
+                isValid = false;
+            }
+            
+            // Validate regional ID
+            if (!govId) {
+                showFieldError('govId', 'Regional ID is required');
+                isValid = false;
+            } else if (govId.length < 3) {
+                showFieldError('govId', 'Regional ID must be at least 3 characters');
+                isValid = false;
+            }
+            
+            // Validate password
+            if (!password) {
+                showFieldError('password', 'Password is required');
+                isValid = false;
+            } else if (password.length < 6) {
+                showFieldError('password', 'Password must be at least 6 characters');
+                isValid = false;
+            }
+            
+            if (!isValid) {
+                return false;
+            }
+            
+            // Show loading state
+            form.classList.add('loading');
+            const submitBtn = form.querySelector('.login-btn');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Logging in...';
+            
+            // Simulate API call
+            setTimeout(() => {
+                try {
+                    // Store login state (you might want to use proper session management)
+                    localStorage.setItem('regionUser', JSON.stringify({
+                        region: state,
+                        regionId: govId,
+                        role: 'regional_admin' // This would come from your backend
+                    }));
+                    
+                    showSuccessMessage('Login successful! Redirecting...');
+                    
+                    // Navigate to dashboard after a short delay
+                    setTimeout(() => {
+                        window.location.href = 'RegionDashboard.html';
+                    }, 1500);
+                    
+                } catch (error) {
+                    showErrorMessage('Login failed. Please try again.');
+                    console.error('Login error:', error);
+                } finally {
+                    form.classList.remove('loading');
+                    submitBtn.textContent = originalText;
+                }
+            }, 2000);
+            
+            return false;
+        }
+        
+        function showFieldError(fieldId, message) {
+            const field = document.getElementById(fieldId);
+            const formGroup = field.closest('.form-group');
+            formGroup.classList.add('error');
+            
+            let errorDiv = formGroup.querySelector('.error-message');
+            if (!errorDiv) {
+                errorDiv = document.createElement('div');
+                errorDiv.className = 'error-message';
+                formGroup.appendChild(errorDiv);
+            }
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+        
+        function clearFormErrors() {
+            document.querySelectorAll('.form-group').forEach(group => {
+                group.classList.remove('error', 'success');
+                const errorMsg = group.querySelector('.error-message');
+                if (errorMsg) {
+                    errorMsg.style.display = 'none';
+                }
+            });
+        }
+        
+        function showSuccessMessage(message) {
+            const container = document.querySelector('.login-container');
+            let successDiv = container.querySelector('.success-message');
+            if (!successDiv) {
+                successDiv = document.createElement('div');
+                successDiv.className = 'success-message';
+                container.appendChild(successDiv);
+            }
+            successDiv.textContent = message;
+            successDiv.style.display = 'block';
+        }
+        
+        function showErrorMessage(message) {
+            const container = document.querySelector('.login-container');
+            let errorDiv = container.querySelector('.error-message');
+            if (!errorDiv) {
+                errorDiv = document.createElement('div');
+                errorDiv.className = 'error-message';
+                errorDiv.style.color = '#e74c3c';
+                errorDiv.style.background = '#fdf2f2';
+                errorDiv.style.padding = '0.5rem';
+                errorDiv.style.borderRadius = '5px';
+                errorDiv.style.marginTop = '1rem';
+                container.appendChild(errorDiv);
+            }
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+
+        function validateSignupForm(event) {
+            event.preventDefault();
+            // Add your signup validation logic here
+            alert('Account created successfully! Please login.');
+            toggleForm('login');
+        }
+    </script>
+</body>
+</html>

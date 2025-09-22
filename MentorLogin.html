@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mentor Login - Drop Shield</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', 'Arial', sans-serif;
+            background: linear-gradient(135deg, #e67e22 0%, #f39c12 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 400px;
+            border: 1px solid #000;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .login-toggle {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            justify-content: center;
+        }
+
+        .toggle-btn {
+            padding: 0.5rem 1.5rem;
+            border: none;
+            background: none;
+            color: #7f8c8d;
+            font-size: 1.1rem;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .toggle-btn.active {
+            color: #2c3e50;
+            font-weight: bold;
+        }
+
+        .toggle-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(45deg, #e67e22, #f39c12);
+            border-radius: 3px;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+            font-weight: bold;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #e67e22;
+        }
+
+        .password-requirements {
+            font-size: 0.8rem;
+            color: #7f8c8d;
+            margin-top: 0.5rem;
+        }
+
+        .login-btn {
+            background: linear-gradient(45deg, #e67e22, #f39c12);
+            color: white;
+            padding: 1rem;
+            border: none;
+            border-radius: 8px;
+            width: 100%;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .forgot-password {
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .forgot-password a {
+            color: #e67e22;
+            text-decoration: none;
+        }
+
+        .forgot-password a:hover {
+            text-decoration: underline;
+        }
+
+        /* Error styling */
+        .error {
+            border-color: #e74c3c !important;
+        }
+
+        .error-message {
+            color: #e74c3c;
+            font-size: 0.8rem;
+            margin-top: 0.3rem;
+            display: none;
+        }
+
+        .success-message {
+            color: #27ae60;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            padding: 0.5rem;
+            background: #d5f4e6;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .form-group.success input,
+        .form-group.success select {
+            border-color: #27ae60;
+        }
+
+        .form-group.error input,
+        .form-group.error select {
+            border-color: #e74c3c;
+        }
+
+        .loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        .loading .login-btn {
+            background: #95a5a6;
+        }
+
+        .mentor-badge {
+            background: linear-gradient(45deg, #e67e22, #f39c12);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <div class="mentor-badge">👨‍🏫 Mentor Portal</div>
+            <div class="login-toggle">
+                <button class="toggle-btn active" onclick="toggleForm('login')">Login</button>
+                <button class="toggle-btn" onclick="toggleForm('signup')">Sign Up</button>
+            </div>
+        </div>
+
+        <!-- Login Form -->
+        <form id="loginForm" onsubmit="return validateLoginForm(event)">
+            <div class="form-group">
+                <label for="institution">Institution</label>
+                <select id="institution" required>
+                    <option value="">Select Institution</option>
+                    <option value="Vardhaman">Vardhaman College</option>
+                    <option value="CVR">CVR Institute</option>
+                    <option value="CBIT">CBIT University</option>
+                    <option value="JNTU">JNTU Hyderabad</option>
+                    <option value="OU">Osmania University</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="mentorId">Mentor ID / Email</label>
+                <input type="email" id="mentorId" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" required>
+                <div class="password-requirements">
+                    Password must contain at least 8 characters including:
+                    <br>- Uppercase & lowercase letters
+                    <br>- Numbers
+                    <br>- Special characters ($@#)
+                </div>
+            </div>
+
+            <button type="submit" class="login-btn">Login</button>
+
+            <div class="forgot-password">
+                <a href="#">Forgot Password?</a>
+            </div>
+        </form>
+
+        <!-- Signup Form -->
+        <form id="signupForm" style="display: none;" onsubmit="return validateSignupForm(event)">
+            <div class="form-group">
+                <label for="signupInstitution">Institution</label>
+                <select id="signupInstitution" required>
+                    <option value="">Select Institution</option>
+                    <option value="Vardhaman">Vardhaman College</option>
+                    <option value="CVR">CVR Institute</option>
+                    <option value="CBIT">CBIT University</option>
+                    <option value="JNTU">JNTU Hyderabad</option>
+                    <option value="OU">Osmania University</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="mentorType">Mentor Type</label>
+                <select id="mentorType" required>
+                    <option value="">Select Mentor Type</option>
+                    <option value="academic">Academic Mentor</option>
+                    <option value="career">Career Mentor</option>
+                    <option value="personal">Personal Mentor</option>
+                    <option value="research">Research Mentor</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="fullName">Full Name</label>
+                <input type="text" id="fullName" required>
+            </div>
+
+            <div class="form-group">
+                <label for="mentorIdSignup">Mentor ID</label>
+                <input type="text" id="mentorIdSignup" required>
+            </div>
+
+            <div class="form-group">
+                <label for="institutionEmail">Institution Email</label>
+                <input type="email" id="institutionEmail" required>
+            </div>
+
+            <div class="form-group">
+                <label for="phone">Phone Number</label>
+                <input type="tel" id="phone" pattern="[0-9]{10}" required>
+                <div class="password-requirements">Enter 10-digit phone number</div>
+            </div>
+
+            <div class="form-group">
+                <label for="experience">Years of Experience</label>
+                <select id="experience" required>
+                    <option value="">Select Experience</option>
+                    <option value="0-2">0-2 years</option>
+                    <option value="3-5">3-5 years</option>
+                    <option value="6-10">6-10 years</option>
+                    <option value="10+">10+ years</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="signupPassword">Set Password</label>
+                <input type="password" id="signupPassword" required>
+                <div class="password-requirements">
+                    Password must contain at least 8 characters including:
+                    <br>- Uppercase & lowercase letters
+                    <br>- Numbers
+                    <br>- Special characters ($@#)
+                </div>
+            </div>
+
+            <button type="submit" class="login-btn">Create Account</button>
+        </form>
+    </div>
+
+    <script>
+        function toggleForm(formType) {
+            const loginForm = document.getElementById('loginForm');
+            const signupForm = document.getElementById('signupForm');
+            const buttons = document.querySelectorAll('.toggle-btn');
+
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            if (formType === 'login') {
+                loginForm.style.display = 'block';
+                signupForm.style.display = 'none';
+            } else {
+                loginForm.style.display = 'none';
+                signupForm.style.display = 'block';
+            }
+        }
+
+        function validateLoginForm(event) {
+            event.preventDefault();
+            
+            const form = event.target;
+            const institution = document.getElementById('institution').value;
+            const mentorId = document.getElementById('mentorId').value;
+            const password = document.getElementById('password').value;
+            
+            // Clear previous errors
+            clearFormErrors();
+            
+            let isValid = true;
+            
+            // Validate institution
+            if (!institution) {
+                showFieldError('institution', 'Please select an institution');
+                isValid = false;
+            }
+            
+            // Validate mentor ID
+            if (!mentorId) {
+                showFieldError('mentorId', 'Mentor ID is required');
+                isValid = false;
+            } else if (!mentorId.includes('@')) {
+                showFieldError('mentorId', 'Please enter a valid email address');
+                isValid = false;
+            }
+            
+            // Validate password
+            if (!password) {
+                showFieldError('password', 'Password is required');
+                isValid = false;
+            } else if (password.length < 6) {
+                showFieldError('password', 'Password must be at least 6 characters');
+                isValid = false;
+            }
+            
+            if (!isValid) {
+                return false;
+            }
+            
+            // Show loading state
+            form.classList.add('loading');
+            const submitBtn = form.querySelector('.login-btn');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Logging in...';
+            
+            // Simulate API call
+            setTimeout(() => {
+                try {
+                    // Store login state (you might want to use proper session management)
+                    localStorage.setItem('mentorUser', JSON.stringify({
+                        institution: institution,
+                        mentorId: mentorId,
+                        role: 'mentor' // This would come from your backend
+                    }));
+                    
+                    showSuccessMessage('Login successful! Redirecting...');
+                    
+                    // Navigate to dashboard after a short delay
+                    setTimeout(() => {
+                        window.location.href = 'MentorDashboard.html';
+                    }, 1500);
+                    
+                } catch (error) {
+                    showErrorMessage('Login failed. Please try again.');
+                    console.error('Login error:', error);
+                } finally {
+                    form.classList.remove('loading');
+                    submitBtn.textContent = originalText;
+                }
+            }, 2000);
+            
+            return false;
+        }
+
+        function validateSignupForm(event) {
+            event.preventDefault();
+            
+            const password = document.getElementById('signupPassword').value;
+            const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@#])[A-Za-z\d$@#]{8,}$/;
+            const phone = document.getElementById('phone').value;
+            const phoneRegex = /^[0-9]{10}$/;
+
+            if (!phoneRegex.test(phone)) {
+                document.getElementById('phone').classList.add('error');
+                alert('Please enter a valid 10-digit phone number');
+                return false;
+            }
+
+            if (!passwordRegex.test(password)) {
+                document.getElementById('signupPassword').classList.add('error');
+                alert('Password must meet all requirements');
+                return false;
+            }
+
+            console.log('Mentor sign-up form submitted successfully');
+            alert('Account created successfully! Please login.');
+            toggleForm('login');
+            return true;
+        }
+        
+        function showFieldError(fieldId, message) {
+            const field = document.getElementById(fieldId);
+            const formGroup = field.closest('.form-group');
+            formGroup.classList.add('error');
+            
+            let errorDiv = formGroup.querySelector('.error-message');
+            if (!errorDiv) {
+                errorDiv = document.createElement('div');
+                errorDiv.className = 'error-message';
+                formGroup.appendChild(errorDiv);
+            }
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+        
+        function clearFormErrors() {
+            document.querySelectorAll('.form-group').forEach(group => {
+                group.classList.remove('error', 'success');
+                const errorMsg = group.querySelector('.error-message');
+                if (errorMsg) {
+                    errorMsg.style.display = 'none';
+                }
+            });
+        }
+        
+        function showSuccessMessage(message) {
+            const container = document.querySelector('.login-container');
+            let successDiv = container.querySelector('.success-message');
+            if (!successDiv) {
+                successDiv = document.createElement('div');
+                successDiv.className = 'success-message';
+                container.appendChild(successDiv);
+            }
+            successDiv.textContent = message;
+            successDiv.style.display = 'block';
+        }
+        
+        function showErrorMessage(message) {
+            const container = document.querySelector('.login-container');
+            let errorDiv = container.querySelector('.error-message');
+            if (!errorDiv) {
+                errorDiv = document.createElement('div');
+                errorDiv.className = 'error-message';
+                errorDiv.style.color = '#e74c3c';
+                errorDiv.style.background = '#fdf2f2';
+                errorDiv.style.padding = '0.5rem';
+                errorDiv.style.borderRadius = '5px';
+                errorDiv.style.marginTop = '1rem';
+                container.appendChild(errorDiv);
+            }
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Drop Shield - Government Dashboard</title>
+  <style>
+    /* --- Base --- */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "Segoe UI", Roboto, Arial, sans-serif;
+      background: #f4f6f9;
+      color: #333;
+      line-height: 1.4;
+    }
+    header {
+      background: linear-gradient(135deg,#2c3e50,#3498db);
+      color: #fff;
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 68px;
+      display:flex; align-items:center;
+      justify-content:space-between;
+      padding: 0 20px;
+      z-index: 1000;
+      box-shadow: 0 3px 10px rgba(0,0,0,.08);
+    }
+    header h1 { font-size: 1.5rem; color:#ecf0f1; margin:0; }
+    .navbar { display:flex; align-items:center; gap:16px; }
+    .dropdown { position: relative; }
+    .dropdown-toggle {
+      cursor:pointer; color:#fff; background:none; border:none; font-size:0.95rem;
+      padding:8px 10px; border-radius:6px;
+    }
+    .dropdown-toggle:hover { background: rgba(255,255,255,0.06); }
+    .dropdown-content {
+      display:none; position:absolute; top:38px; left:0; min-width:160px;
+      background:#fff; border-radius:8px; box-shadow:0 6px 18px rgba(0,0,0,.12); overflow:hidden;
+    }
+    .dropdown-content a {
+      display:block; padding:10px 14px; color:#333; text-decoration:none; border-bottom:1px solid #eee;
+    }
+    .dropdown-content a:last-child { border-bottom:none; }
+    .dropdown-content a:hover { background:#f5f6f8; }
+
+    /* profile-container dropdown styles */
+.profile-container.dropdown {
+  position: relative;       /* anchor for the dropdown */
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* the dropdown menu that appears under the avatar */
+.profile-container .profile-dropdown {
+  display: none;                           /* hidden by default; shown via :hover or .open */
+  position: absolute;
+  top: calc(100% + 8px);                   /* place it below the avatar */
+  right: 0;                                /* align to the right side of the container */
+  min-width: 160px;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+  z-index: 2000;
+  overflow: hidden;
+  padding: 6px 0;
+}
+
+/* individual items inside the profile dropdown */
+.profile-container .profile-dropdown a {
+  display: block;
+  padding: 10px 14px;
+  color: #333;
+  text-decoration: none;
+  font-weight: 600;
+  border-bottom: 1px solid #f1f3f5;
+  transition: background 0.15s ease;
+}
+
+.profile-container .profile-dropdown a:last-child {
+  border-bottom: none;
+}
+
+.profile-container .profile-dropdown a:hover {
+  background: #f5f6f8;
+  color: #0b2653;
+}
+
+/* show the dropdown on hover (optional) */
+.profile-container.dropdown:hover .profile-dropdown {
+  display: block;
+}
+
+/* allow JS toggling by adding/removing the "open" class */
+.profile-container.dropdown.open .profile-dropdown {
+  display: block;
+}
+
+/* make avatar pointer-friendly */
+.profile-container .profile-avatar {
+  cursor: pointer;
+}
+
+    .profile-avatar {
+      width:40px; height:40px; border-radius:50%; background:#f39c12; display:flex;
+      align-items:center; justify-content:center; color:#fff; font-weight:700; font-size:1rem;
+    }
+
+    /* --- Layout --- */
+    .dashboard-container {
+      max-width: 1400px; margin: 90px auto 40px; padding: 0 20px;
+      display:grid; grid-template-columns: 320px 1fr; gap:20px;
+      align-items:start;
+    }
+
+    .card {
+      background:#fff; border-radius:12px; padding:18px; box-shadow: 0 6px 18px rgba(20,20,30,0.04);
+    }
+
+    /* --- Left column --- */
+    .profile-card { text-align:center; }
+    .profile-picture {
+      width:88px; height:88px; border-radius:50%; background:#3498db; color:#fff;
+      display:inline-flex; align-items:center; justify-content:center; font-size:2rem; border:3px solid #f39c12;
+      margin-bottom:12px;
+    }
+    .profile-info h3 { color:#22313f; margin-bottom:6px; font-size:1.05rem; }
+    .profile-info p { color:#7f8c8d; font-size:0.9rem; margin-bottom:4px; }
+
+    .pie-legend { list-style:none; margin-top:12px; padding-left:0; }
+    .pie-legend li { display:flex; gap:10px; align-items:center; margin:8px 0; color:#444; }
+    .pie-color { width:12px; height:12px; border-radius:2px; display:inline-block; }
+
+    /* Pie */
+    .pie-wrap { display:flex; gap:12px; align-items:center; justify-content:center; margin-top:8px; }
+    .pie-chart {
+      width:120px; height:120px; border-radius:50%;
+      background: conic-gradient(#e74c3c 0% 20%, #f39c12 20% 55%, #2ecc71 55% 100%);
+      box-shadow: inset 0 2px 6px rgba(0,0,0,0.04);
+    }
+
+    /* --- Right column (charts and content) --- */
+    .charts-col { display:flex; flex-direction:column; gap:18px; }
+
+    .chart-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+    .chart-title { font-weight:700; color:#2c3e50; }
+
+    /* Attendance chart area (grid + y-axis + bars) */
+    .attendance-wrapper {
+      position:relative; height:240px; padding-left:48px; padding-bottom:34px;
+    }
+    .y-axis-attendance {
+      position:absolute; left:0; bottom:34px; top:0; display:flex; flex-direction:column; justify-content:space-between;
+      width:48px; align-items:flex-end; padding-right:8px;
+    }
+    .y-axis-attendance span { font-size:12px; color:#6b7280; }
+    .grid-attendance {
+      position:absolute; left:48px; right:12px; bottom:34px; top:0; display:flex; flex-direction:column; justify-content:space-between;
+    }
+    .grid-attendance div { border-top:1px dashed #e6e9ee; width:100%; }
+
+    .bar-chart-attendance {
+      position:absolute; left:48px; right:12px; bottom:34px; top:0; display:flex; align-items:flex-end; gap:14px; padding:6px 8px 0 8px;
+    }
+    .bar-attendance {
+      width:44px; border-radius:8px 8px 4px 4px; background:linear-gradient(to top,#3498db,#5dade2);
+      position:relative; display:flex; align-items:flex-end; justify-content:center; transition:transform .18s ease, box-shadow .18s ease;
+      box-shadow: 0 3px 10px rgba(50,80,120,0.06);
+      overflow:visible;
+    }
+    .bar-attendance:hover { transform: translateY(-4px) scale(1.02); box-shadow: 0 10px 20px rgba(50,80,120,.12); }
+    .bar-value-attendance {
+      position:absolute; top:-22px; left:50%; transform:translateX(-50%); font-weight:700; font-size:12px; color:#22313f;
+      text-shadow: 0 1px 0 #fff;
+    }
+    .bar-label-attendance { position:absolute; bottom:-22px; left:50%; transform:translateX(-50%); font-size:12px; color:#6b7280; white-space:nowrap; }
+
+    /* Marks chart (similar) */
+    .marks-wrapper { position:relative; height:240px; padding-left:48px; padding-bottom:34px; }
+    .grid-marks { position:absolute; left:48px; right:12px; bottom:34px; top:0; display:flex; flex-direction:column; justify-content:space-between; }
+    .grid-marks div { border-top:1px dashed #e6e9ee; }
+    .bar-chart-marks { position:absolute; left:48px; right:12px; bottom:34px; top:0; display:flex; align-items:flex-end; gap:16px; padding:8px; }
+    .bar-marks { width:64px; border-radius:8px 8px 4px 4px; background:linear-gradient(to top,#2ecc71,#58d68f); position:relative; transition:transform .18s; box-shadow:0 4px 12px rgba(0,0,0,.06); }
+    .bar-marks:hover { transform: translateY(-6px); box-shadow:0 10px 20px rgba(0,0,0,.12); }
+    .bar-value-marks { position:absolute; top:-24px; left:50%; transform:translateX(-50%); font-weight:700; font-size:13px; color:#22313f; }
+    .bar-label-marks { position:absolute; bottom:-22px; left:50%; transform:translateX(-50%); font-size:12px; color:#6b7280; text-align:center; max-width:72px; }
+
+    /* Legend for marks */
+    .marks-legend { display:flex; gap:18px; align-items:center; margin-bottom:10px; }
+    .legend-item { display:flex; gap:8px; align-items:center; color:#333; font-size:13px; }
+    .legend-dot { width:12px; height:12px; border-radius:50%; }
+
+    /* Alerts & summary */
+    .alerts { display:flex; gap:12px; margin-top:6px; }
+    .alert { padding:10px 14px; border-radius:8px; font-weight:600; display:inline-block; }
+    .alert.critical { background:#fff1f0; color:#991b1b; box-shadow:0 6px 14px rgba(153,27,27,0.04); }
+    .alert.warning { background:#fff9ed; color:#92400e; box-shadow:0 6px 14px rgba(146,64,14,0.04); }
+
+    .summary-cards { display:grid; grid-template-columns: repeat(auto-fit, minmax(160px,1fr)); gap:12px; margin-top:12px; }
+    .summary-card { padding:12px; border-radius:10px; background:#fff; text-align:center; box-shadow: 0 6px 18px rgba(0,0,0,0.04); }
+    .summary-card h3 { font-size:0.95rem; color:#2c3e50; margin-bottom:6px; font-weight:700; }
+    .summary-card .number { font-size:1.4rem; color:#2b7abf; font-weight:800; }
+
+    /* Performance table */
+    .performance-section { margin-top:8px; }
+    .filters { display:flex; gap:12px; margin-bottom:12px; }
+    .filter-select { padding:8px 10px; border-radius:8px; border:1px solid #e6e9ee; background:#fff; }
+    .performance-list { width:100%; border-collapse:collapse; margin-top:6px; }
+    .performance-list th, .performance-list td { padding:10px 12px; border-bottom:1px solid #eef2f6; text-align:left; font-size:0.95rem; color:#243240; }
+    .performance-list th { background:#fbfdff; color:#2c3e50; font-weight:700; font-size:0.9rem; }
+    .performance-list tr:hover { background:#fbfdff; }
+
+    .status { padding:6px 10px; border-radius:999px; font-size:0.85rem; font-weight:700; display:inline-block; }
+    .status.critical { background:#fee2e2; color:#991b1b; }
+    .status.warning { background:#fff4e6; color:#92400e; }
+    .status.good { background:#e6ffef; color:#065f46; }
+
+    /* responsive */
+    @media (max-width:1000px) {
+      .dashboard-container { grid-template-columns:1fr; padding: 20px; }
+      .attendance-wrapper, .marks-wrapper { padding-left:40px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Drop Shield</h1>
+    <div class="navbar">
+      <div class="dropdown">
+        <button class="dropdown-toggle" id="districtDropdown">District ▼</button>
+        <div class="dropdown-content" id="districtDropdownContent"></div>
+      </div>
+
+      <div class="dropdown">
+        <button class="dropdown-toggle" id="regionDropdown">Region ▼</button>
+        <div class="dropdown-content" id="regionDropdownContent"></div>
+      </div>
+
+      <div class="profile-container dropdown">
+        <div class="profile-avatar" id="topAvatar">S</div>
+        <div class="dropdown-content profile-dropdown" style="right:0; left:auto;" id="avatarBtn">
+          <a href="#">Profile</a>
+          <a href="#">Settings</a>
+          <a id="logoutBtn" href="#">Logout</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="dashboard-container">
+    <!-- LEFT -->
+    <section class="left-panel">
+      <div class="card profile-card">
+        <div class="profile-picture" id="profilePic">S</div>
+        <div class="profile-info">
+          <h3 id="profileName">Suresh Kumar</h3>
+          <p id="profileId">ID: G12345</p>
+          <p id="profilePos">Position: Educational Official</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 class="chart-title">Fees Status</h3>
+        <div class="pie-wrap">
+          <div class="pie-chart" aria-hidden="true"></div>
+        </div>
+        <ul class="pie-legend">
+          <li><span class="pie-color" style="background:#e74c3c"></span> Overdue Fees (20%)</li>
+          <li><span class="pie-color" style="background:#f39c12"></span> Partially Paid (35%)</li>
+          <li><span class="pie-color" style="background:#2ecc71"></span> Fully Paid (45%)</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- RIGHT -->
+    <section class="charts-col">
+      <div class="card">
+        <div class="chart-header">
+          <div class="chart-title">Monthly Attendance Trends</div>
+        </div>
+
+        <!-- attendance wrapper with y-axis and grid -->
+        <div class="attendance-wrapper">
+          <div class="y-axis-attendance" aria-hidden="true">
+            <span>100%</span><span>95%</span><span>90%</span><span>85%</span><span>80%</span><span>75%</span><span>70%</span>
+          </div>
+          <div class="grid-attendance" aria-hidden="true">
+            <div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+          </div>
+
+          <div class="bar-chart-attendance" id="attendanceChart" aria-label="Attendance chart"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="chart-header" style="align-items:flex-start;">
+          <div>
+            <div class="chart-title">Academic Performance (Unit Tests)</div>
+            <div style="font-size:13px;color:#6b7280;margin-top:6px">Unit wise marks (showing %)</div>
+          </div>
+
+          <div class="marks-legend" aria-hidden="true" style="margin-left:auto;">
+            <div class="legend-item"><span class="legend-dot" style="background:#7be75c"></span> Unit 1</div>
+            <div class="legend-item"><span class="legend-dot" style="background:#00c26f"></span> Unit 2</div>
+            <div class="legend-item"><span class="legend-dot" style="background:#ff7b22"></span> Unit 3</div>
+            <div class="legend-item"><span class="legend-dot" style="background:#99e06e"></span> Unit 4</div>
+          </div>
+        </div>
+
+        <div class="marks-wrapper">
+          <div class="grid-marks" aria-hidden="true">
+            <div></div><div></div><div></div><div></div><div></div>
+          </div>
+
+          <div class="bar-chart-marks" id="marksChart" aria-label="Marks chart"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="alerts">
+          <div class="alert critical">⚠️ Critical: 23 institutions require immediate attention due to low attendance.</div>
+          <div class="alert warning">📊 Warning: 15 institutions pending fee collections &gt; ₹50,000.</div>
+        </div>
+
+        <div class="summary-cards" style="margin-top:14px;">
+          <div class="summary-card">
+            <h3>Total Institutions</h3>
+            <div class="number">245</div>
+          </div>
+          <div class="summary-card">
+            <h3>Total Students</h3>
+            <div class="number">52,489</div>
+          </div>
+          <div class="summary-card">
+            <h3>Critical Attention</h3>
+            <div class="number">23</div>
+          </div>
+          <div class="summary-card">
+            <h3>Average Attendance</h3>
+            <div class="number">82%</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card performance-section">
+        <h3 style="margin-bottom:12px;">Performance Overview</h3>
+
+        <div class="filters">
+          <select id="criteriaFilter" class="filter-select" title="Filter by criteria">
+            <option value="attendance">Attendance</option>
+            <option value="fees">Pending Fees</option>
+            <option value="marks">Academic Performance</option>
+          </select>
+        </div>
+
+        <table class="performance-list" aria-label="Institution performance">
+          <thead>
+            <tr>
+              <th>Institution Name</th>
+              <th>District</th>
+              <th>Region</th>
+              <th>Total Students</th>
+              <th>Attendance %</th>
+              <th>Pending Fees</th>
+              <th>Academic Score</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="performanceData"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    /* ---------- Sample data ---------- */
+    const statesData = {
+      "Telangana": {
+        districts: {
+          "Hyderabad": ["Central", "South"],
+          "Rangareddy": ["East", "West"],
+          "Medchal": ["North"]
+        }
+      }
+    };
+
+    const institutions = [
+      { name: "Government College 1", district: "Hyderabad", region: "Central", students: 1200, attendance: 68, pendingFees: "₹120,000", academicScore: 72, status: "critical" },
+      { name: "Government College 2", district: "Rangareddy", region: "East", students: 950, attendance: 85, pendingFees: "₹50,000", academicScore: 88, status: "warning" },
+      { name: "Government College 3", district: "Medchal", region: "North", students: 2100, attendance: 92, pendingFees: "₹15,000", academicScore: 95, status: "good" }
+    ];
+
+    /* ---------- Dropdowns population ---------- */
+    function populateDistricts(state) {
+      const districtDropdown = document.getElementById('districtDropdownContent');
+      districtDropdown.innerHTML = '<a href="#" onclick="selectAllDistricts(event)">All Districts</a>';
+      if (!statesData[state] || !statesData[state].districts) return;
+      Object.keys(statesData[state].districts).forEach(district => {
+        const link = document.createElement('a');
+        link.href = '#';
+        link.textContent = district;
+        link.onclick = (e) => {
+          e.preventDefault();
+          updateRegions(district);
+          document.getElementById('districtDropdown').textContent = district + ' ▼';
+          districtDropdown.style.display = 'none';
+        };
+        districtDropdown.appendChild(link);
+      });
+    }
+    function selectAllDistricts(e) { e.preventDefault(); document.getElementById('districtDropdown').textContent = 'District ▼'; document.getElementById('districtDropdownContent').style.display = 'none'; }
+
+    function updateRegions(district) {
+      const regionDropdown = document.getElementById('regionDropdownContent');
+      regionDropdown.innerHTML = '<a href="#" onclick="selectAllRegions(event)">All Regions</a>';
+      const state = JSON.parse(localStorage.getItem('govUser') || '{}').state;
+      if (!state || !statesData[state] || !statesData[state].districts[district]) return;
+      statesData[state].districts[district].forEach(region => {
+        const link = document.createElement('a');
+        link.href = '#';
+        link.textContent = region;
+        link.onclick = (ev) => {
+          ev.preventDefault();
+          document.getElementById('regionDropdown').textContent = region + ' ▼';
+          regionDropdown.style.display = 'none';
+        };
+        regionDropdown.appendChild(link);
+      });
+    }
+    function selectAllRegions(e) { e.preventDefault(); document.getElementById('regionDropdown').textContent = 'Region ▼'; document.getElementById('regionDropdownContent').style.display = 'none'; }
+
+    /* ---------- Table population ---------- */
+    function populateTable(data) {
+      const tbody = document.getElementById('performanceData');
+      tbody.innerHTML = data.map(inst => `
+        <tr>
+          <td>${inst.name}</td>
+          <td>${inst.district}</td>
+          <td>${inst.region}</td>
+          <td>${inst.students}</td>
+          <td>${inst.attendance}%</td>
+          <td>${inst.pendingFees}</td>
+          <td>${inst.academicScore}%</td>
+          <td><span class="status ${inst.status}">${inst.status.toUpperCase()}</span></td>
+        </tr>
+      `).join('');
+    }
+
+    /* ---------- Attendance chart ---------- */
+    function createAttendanceChart() {
+      const chart = document.getElementById('attendanceChart');
+      const data = [
+        { month: 'Jan', value: 78 },
+        { month: 'Feb', value: 82 },
+        { month: 'Mar', value: 80 },
+        { month: 'Apr', value: 85 },
+        { month: 'May', value: 88 },
+        { month: 'Jun', value: 92 }
+      ];
+      // Render bars using percentage heights (parent has fixed height)
+      chart.innerHTML = data.map(item => `
+        <div class="bar-attendance" style="height:${item.value}%">
+          <div class="bar-value-attendance">${item.value}%</div>
+          <div class="bar-label-attendance">${item.month}</div>
+        </div>
+      `).join('');
+    }
+
+    /* ---------- Marks chart (unit tests) ---------- */
+    function createMarksChart() {
+      const chart = document.getElementById('marksChart');
+      // Example test scores (out of 100)
+      const data = [
+        { test: 'Unit 1', score: 75, color: '#7be75c' },
+        { test: 'Unit 2', score: 85, color: '#00c26f' },
+        { test: 'Unit 3', score: 78, color: '#ff7b22' },
+        { test: 'Unit 4', score: 91, color: '#99e06e' }
+      ];
+      chart.innerHTML = data.map(item => `
+        <div class="bar-marks" style="height:${item.score}%; background: linear-gradient(to top, ${item.color}, ${item.color});">
+          <div class="bar-value-marks">${item.score}%</div>
+          <div class="bar-label-marks">${item.test}</div>
+        </div>
+      `).join('');
+    }
+
+    /* ---------- Small helpers & events ---------- */
+    function logout() {
+      localStorage.removeItem('govUser');
+      // For convenience we won't redirect; instead recreate default user on next load.
+      alert('Logged out (local storage cleared). Reload page to see default user created.');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // create a default govUser if none present so the dashboard works out-of-the-box
+      if (!localStorage.getItem('govUser')) {
+        const defaultUser = { name: 'Suresh Kumar', id: 'G12345', position: 'Educational Official', state: 'Telangana' };
+        localStorage.setItem('govUser', JSON.stringify(defaultUser));
+      }
+      const userData = JSON.parse(localStorage.getItem('govUser'));
+
+      // populate profile header & left card
+      document.getElementById('topAvatar').textContent = userData.name.charAt(0);
+      document.getElementById('profilePic').textContent = userData.name.charAt(0);
+      document.getElementById('profileName').textContent = userData.name;
+      document.getElementById('profileId').textContent = 'ID: ' + userData.id;
+      document.getElementById('profilePos').textContent = 'Position: ' + (userData.position || 'Official');
+
+      // init dropdowns & table & charts
+      populateDistricts(userData.state || 'Telangana');
+      populateTable(institutions);
+      createAttendanceChart();
+      createMarksChart();
+    });
+
+    // dropdown open/close logic
+    document.querySelectorAll('.dropdown-toggle').forEach(toggle => {
+      toggle.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const content = this.nextElementSibling;
+        const isVisible = content.style.display === 'block';
+        document.querySelectorAll('.dropdown-content').forEach(d => d.style.display = 'none');
+        content.style.display = isVisible ? 'none' : 'block';
+      });
+    });
+    window.addEventListener('click', function(e) {
+      if (!e.target.matches('.dropdown-toggle')) {
+        document.querySelectorAll('.dropdown-content').forEach(d => d.style.display = 'none');
+      }
+    });
+
+    // notifications
+    document.getElementById('notificationsIcon')?.addEventListener('click', () => {
+      alert('Notifications will appear here.');
+    });
+
+    // logout control
+    // toggle profile dropdown on avatar click
+document.getElementById("avatarBtn")?.addEventListener("click", function (e) {
+  e.stopPropagation();
+  document.querySelector(".profile-container").classList.toggle("open");
+});
+
+// close dropdown if clicking outside
+window.addEventListener("click", function (e) {
+  if (!e.target.closest(".profile-container")) {
+    document.querySelector(".profile-container").classList.remove("open");
+  }
+});
+
+// logout button
+document.getElementById("logoutBtn")?.addEventListener("click", function (e) {
+  e.preventDefault();
+  localStorage.removeItem("govUser");
+  window.location.href = "index.html";
+});
+
+
+  </script>
+</body>
+</html>

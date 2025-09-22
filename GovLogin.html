@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Government Login - Protexa</title>
+    <title>Drop Shield - Government Login</title>
     <style>
         * {
             margin: 0;
@@ -92,6 +92,42 @@
         .login-btn:hover {
             transform: translateY(-2px);
         }
+
+        .error-message {
+            color: #e74c3c;
+            font-size: 0.8rem;
+            margin-top: 0.3rem;
+            display: none;
+        }
+
+        .success-message {
+            color: #27ae60;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            padding: 0.5rem;
+            background: #d5f4e6;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .form-group.success input,
+        .form-group.success select {
+            border-color: #27ae60;
+        }
+
+        .form-group.error input,
+        .form-group.error select {
+            border-color: #e74c3c;
+        }
+
+        .loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        .loading .login-btn {
+            background: #95a5a6;
+        }
     </style>
 </head>
 <body>
@@ -110,14 +146,40 @@
                 <select id="loginState" required>
                     <option value="">Select State</option>
                     <option value="AP">Andhra Pradesh</option>
-                    <option value="TS">Telangana</option>
+                    <option value="ANP">Arunachal Pradesh</option>
+                    <option value="AS">Assam</option>
+                    <option value="BR">Bihar</option>
+                    <option value="CG">Chhattisgarh</option>
+                    <option value="DL">Delhi</option>
+                    <option value="GA">Goa</option>
+                    <option value="GJ">Gujarat</option>
+                    <option value="HR">Haryana</option>
+                    <option value="HP">Himachal Pradesh</option>
+                    <option value="JH">Jharkhand</option>
+                    <option value="JK">Jammu and Kashmir</option>
                     <option value="KA">Karnataka</option>
-                    <!-- Add more states -->
+                    <option value="KL">Kerala</option>
+                    <option value="MP">Madhya Pradesh</option>
+                    <option value="MH">Maharashtra</option>
+                    <option value="MN">Manipur</option>
+                    <option value="ML">Meghalaya</option>
+                    <option value="MZ">Mizoram</option>
+                    <option value="NL">Nagaland</option>
+                    <option value="OR">Odisha</option>
+                    <option value="PB">Punjab</option>
+                    <option value="RJ">Rajasthan</option>
+                    <option value="SK">Sikkim</option>
+                    <option value="TN">Tamil Nadu</option>
+                    <option value="TS">Telangana</option>
+                    <option value="TR">Tripura</option>
+                    <option value="UP">Uttar Pradesh</option>
+                    <option value="UT">Uttarakhand</option>
+                    <option value="WB">West Bengal</option>
                 </select>
             </div>
 
             <div class="form-group">
-                <label for="govId">Government ID</label>
+                <label for="govId">Government ID/Drop Shield ID</label>
                 <input type="text" id="govId" required>
             </div>
 
@@ -136,8 +198,35 @@
                 <select id="signupState" required>
                     <option value="">Select State</option>
                     <option value="AP">Andhra Pradesh</option>
-                    <option value="TS">Telangana</option>
+                    <option value="ANP">Arunachal Pradesh</option>
+                    <option value="AS">Assam</option>
+                    <option value="BR">Bihar</option>
+                    <option value="CG">Chhattisgarh</option>
+                    <option value="DL">Delhi</option>
+                    <option value="GA">Goa</option>
+                    <option value="GJ">Gujarat</option>
+                    <option value="HR">Haryana</option>
+                    <option value="HP">Himachal Pradesh</option>
+                    <option value="JH">Jharkhand</option>
+                    <option value="JK">Jammu and Kashmir</option>
                     <option value="KA">Karnataka</option>
+                    <option value="KL">Kerala</option>
+                    <option value="MP">Madhya Pradesh</option>
+                    <option value="MH">Maharashtra</option>
+                    <option value="MN">Manipur</option>
+                    <option value="ML">Meghalaya</option>
+                    <option value="MZ">Mizoram</option>
+                    <option value="NL">Nagaland</option>
+                    <option value="OR">Odisha</option>
+                    <option value="PB">Punjab</option>
+                    <option value="RJ">Rajasthan</option>
+                    <option value="SK">Sikkim</option>
+                    <option value="TN">Tamil Nadu</option>
+                    <option value="TS">Telangana</option>
+                    <option value="TR">Tripura</option>
+                    <option value="UP">Uttar Pradesh</option>
+                    <option value="UT">Uttarakhand</option>
+                    <option value="WB">West Bengal</option>
                     <!-- Add more states -->
                 </select>
             </div>
@@ -146,9 +235,13 @@
                 <label for="role">Role</label>
                 <select id="role" required>
                     <option value="">Select Role</option>
+                    <option value="MOE">Minister of Education</option>
+                    <option value="PSE">Principal Secretary</option>
+                    <option value="PSE">Special chief Secretary</option>
                     <option value="secretary">Education Secretary</option>
                     <option value="director">Director of Education</option>
                     <option value="officer">Education Officer</option>
+                    <option value="DOE">Director of Education</option>
                 </select>
             </div>
 
@@ -196,8 +289,132 @@
 
         function validateLoginForm(event) {
             event.preventDefault();
-            // Add your login validation logic here
-            window.location.href = 'GovDashboard.html'; // Navigate to dashboard after successful login
+            
+            const form = event.target;
+            const state = document.getElementById('loginState').value;
+            const govId = document.getElementById('govId').value;
+            const password = document.getElementById('password').value;
+            
+            // Clear previous errors
+            clearFormErrors();
+            
+            let isValid = true;
+            
+            // Validate state
+            if (!state) {
+                showFieldError('loginState', 'Please select a state');
+                isValid = false;
+            }
+            
+            // Validate government ID
+            if (!govId) {
+                showFieldError('govId', 'Government ID is required');
+                isValid = false;
+            } else if (govId.length < 3) {
+                showFieldError('govId', 'Government ID must be at least 3 characters');
+                isValid = false;
+            }
+            
+            // Validate password
+            if (!password) {
+                showFieldError('password', 'Password is required');
+                isValid = false;
+            } else if (password.length < 6) {
+                showFieldError('password', 'Password must be at least 6 characters');
+                isValid = false;
+            }
+            
+            if (!isValid) {
+                return false;
+            }
+            
+            // Show loading state
+            form.classList.add('loading');
+            const submitBtn = form.querySelector('.login-btn');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Logging in...';
+            
+            // Simulate API call
+            setTimeout(() => {
+                try {
+                    // Store login state (you might want to use proper session management)
+                    localStorage.setItem('govUser', JSON.stringify({
+                        state: state,
+                        govId: govId,
+                        role: 'admin' // This would come from your backend
+                    }));
+                    
+                    showSuccessMessage('Login successful! Redirecting...');
+                    
+                    // Navigate to dashboard after a short delay
+                    setTimeout(() => {
+                        window.location.href = 'GovDashboard.html';
+                    }, 1500);
+                    
+                } catch (error) {
+                    showErrorMessage('Login failed. Please try again.');
+                    console.error('Login error:', error);
+                } finally {
+                    form.classList.remove('loading');
+                    submitBtn.textContent = originalText;
+                }
+            }, 2000);
+            
+            return false;
+        }
+        
+        function showFieldError(fieldId, message) {
+            const field = document.getElementById(fieldId);
+            const formGroup = field.closest('.form-group');
+            formGroup.classList.add('error');
+            
+            let errorDiv = formGroup.querySelector('.error-message');
+            if (!errorDiv) {
+                errorDiv = document.createElement('div');
+                errorDiv.className = 'error-message';
+                formGroup.appendChild(errorDiv);
+            }
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+        
+        function clearFormErrors() {
+            document.querySelectorAll('.form-group').forEach(group => {
+                group.classList.remove('error', 'success');
+                const errorMsg = group.querySelector('.error-message');
+                if (errorMsg) {
+                    errorMsg.style.display = 'none';
+                }
+            });
+        }
+        
+        function showSuccessMessage(message) {
+            const container = document.querySelector('.login-container');
+            let successDiv = container.querySelector('.success-message');
+            if (!successDiv) {
+                successDiv = document.createElement('div');
+                successDiv.className = 'success-message';
+                container.appendChild(successDiv);
+            }
+            successDiv.textContent = message;
+            successDiv.style.display = 'block';
+        }
+        
+        function showErrorMessage(message) {
+            const container = document.querySelector('.login-container');
+            let errorDiv = container.querySelector('.error-message');
+            if (!errorDiv) {
+                errorDiv = document.createElement('div');
+                errorDiv.className = 'error-message';
+                errorDiv.style.color = '#e74c3c';
+                errorDiv.style.background = '#fdf2f2';
+                errorDiv.style.padding = '0.5rem';
+                errorDiv.style.borderRadius = '5px';
+                errorDiv.style.marginTop = '1rem';
+                container.appendChild(errorDiv);
+            }
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
         }
 
         function validateSignupForm(event) {

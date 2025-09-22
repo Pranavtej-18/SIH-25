@@ -4,18 +4,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Protexa</title>
+    <title>Drop Shield</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
+        .logo a{
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            text-decoration:none ;
+            color: #ffffff;
+            font-weight: 700;
+        }
         body {
-            font-family: 'Arial', sans-serif;
+            font-family: 'Inter', 'Segoe UI', 'Arial', sans-serif;
             line-height: 1.6;
-            color: #333;
+            color: #2c3e50;
             overflow-x: hidden;
         }
 
@@ -41,6 +46,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            background-color: transparent;
+
         }
 
         .logo {
@@ -54,24 +61,171 @@
             display: flex;
             list-style: none;
             gap: 2rem;
+            align-items: center;
+        }
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-content {
+            display: none;
+            position:absolute;
+            right: 0;
+            top: 100%;
+            background: rgba(0, 0, 0, 0.98);
+            min-width: 220px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            z-index: 1000;
+            border-radius: 12px;
+            padding: 8px 0;
+            margin-top: 8px;
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            opacity: 0;
+            transform: translateY(-10px) scale(0.95);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .dropdown-content a {
+            color: #2c3e50;
+            padding: 12px 20px;
+            text-decoration: none;
+            display: block;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            position: relative;
+            border-radius: 8px;
+            margin: 0 8px;
+        }
+
+        .dropdown-content a::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 3px;
+            background: #3498db;
+            transform: scaleY(0);
+            transition: transform 0.3s ease;
+        }
+
+        .dropdown-content a:hover {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+        }
+
+        .dropdown-content a:hover::before {
+            transform: scaleY(1);
+        }
+
+        .dropdown-content a:first-child {
+            margin-top: 0;
+        }
+
+        .dropdown-content a:last-child {
+            margin-bottom: 0;
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        /* Dropdown arrow animation */
+        .dropdown::after {
+            content: '';
+            position: static;
+            top: 50%;
+            right: -8px;
+            transform: translateY(-50%);
+            width: 0;
+            height: 0;
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+            border-top: 5px solid white;
+            transition: transform 0.3s ease;
+        }
+
+        .dropdown:hover::after {
+            transform: translateY(-50%) rotate(180deg);
         }
 
         .nav-links a {
             color: white;
             text-decoration: none;
-            transition: color 0.3s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 20px;
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+        }
+
+        .nav-links a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            transition: left 0.5s;
         }
 
         .nav-links a:hover {
             color: #f39c12;
-            font-size: 1.1rem;
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .nav-links a:hover::before {
+            left: 100%;
+        }
+
+        .nav-links a:active {
+            transform: translateY(0);
+        }
+
+        /* Active state for current page */
+        .nav-links a.active {
+            color: #f39c12;
+            background: rgba(243, 156, 18, 0.2);
+            font-weight: 600;
+        }
+
+        .nav-links a.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 6px;
+            background: #f39c12;
+            border-radius: 50%;
         }
 
         .menu-toggle {
             display: none;
             flex-direction: column;
             cursor: pointer;
+            background: none;
+            border: none;
+            padding: 8px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .menu-toggle:hover {
+            background: rgba(255, 255, 255, 0.1);
         }
 
         .menu-toggle span {
@@ -79,7 +233,22 @@
             height: 3px;
             background: white;
             margin: 3px 0;
-            transition: 0.3s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 2px;
+        }
+
+        /* Hamburger animation */
+        .menu-toggle.active span:nth-child(1) {
+            transform: rotate(45deg) translate(6px, 6px);
+        }
+
+        .menu-toggle.active span:nth-child(2) {
+            opacity: 0;
+            transform: scaleX(0);
+        }
+
+        .menu-toggle.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(6px, -6px);
         }
 
         /* Hero Section */
@@ -92,6 +261,7 @@
             justify-content: center;
             text-align: center;
             color: white;
+            margin-top: 78px;
         }
 
         .hero-content {
@@ -108,7 +278,7 @@
             height: auto;
             object-fit: cover;
             image-rendering: -webkit-optimize-contrast;  /* For Chrome/Safari */
-            image-rendering: crisp-edges;  /* For Firefox */
+            /* image-rendering: crisp-edges;  For Firefox */
             -ms-interpolation-mode: nearest-neighbor;  /* For IE/Edge */
         }
 
@@ -147,6 +317,8 @@
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
+            min-height: 600px;
+            aspect-ratio: 16/9;
         }
 
         .slide.active {
@@ -162,6 +334,9 @@
             height: 100%;
             background: rgba(0, 0, 0, 0.5);
             /* Dark overlay for better text readability */
+        }
+        .slide.error {
+            background: linear-gradient(135deg, #2c3e50, #3498db);
         }
 
         .hero-content {
@@ -190,6 +365,57 @@
             box-shadow: 0 10px 25px rgba(71, 57, 57, 0.2);
         }
 
+        .cta-button:active {
+            transform: translateY(-1px);
+        }
+
+        /* Loading spinner */
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Pulse animation for cards */
+        .card {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+
+        /* Hover effects for interactive elements */
+        .nav-links a {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-links a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .nav-links a:hover::before {
+            left: 100%;
+        }
+
         /* Main Content Sections */
         .section {
             padding: 5rem 0;
@@ -210,10 +436,11 @@
             font-size: 1.2rem;
             text-align: center;
             margin-bottom: 3rem;
-            color: #7f8c8d;
+            color: #5a6c7d;
             max-width: 800px;
             margin-left: auto;
             margin-right: auto;
+            line-height: 1.7;
         }
 
         /* Cards */
@@ -258,10 +485,11 @@
         }
 
         .card p {
-            color: #7f8c8d;
+            color: #5a6c7d;
             text-align: left;
             font-size: 1rem;
             margin: 0;
+            line-height: 1.6;
         }
 
         /* Activities Section */
@@ -288,15 +516,24 @@
             border-radius: 15px;
             text-align: center;
             transition: transform 0.3s;
+            color:#f39c12
         }
 
         .activity-item:hover {
             transform: scale(1.05);
         }
 
+        .container p{
+            color: #000000;
+        }
+
         .activity-item h3 {
             margin-bottom: 1rem;
             font-size: 1.3rem;
+        }
+
+        .activity-item p {
+            color: #000000;
         }
 
         /* Statistics */
@@ -380,19 +617,45 @@
             animation: fadeInUp 0.6s ease-out forwards;
         }
 
-        /* Responsive Design */
+        /* Enhanced Responsive Design */
         @media (max-width: 768px) {
+            .container {
+                padding: 0 15px;
+            }
+
             .nav-links {
                 display: none;
                 position: absolute;
                 top: 100%;
                 left: 0;
                 width: 100%;
-                background: rgba(52, 152, 219, 0.95);
+                background: rgba(44, 62, 80, 0.98);
                 flex-direction: column;
-                padding: 1rem;
+                padding: 1.5rem;
+                align-items: stretch;
+                -webkit-backdrop-filter: blur(15px);
+                backdrop-filter: blur(15px);
+                border-radius: 0 0 20px 20px;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+                transform: translateY(-20px);
+                opacity: 0;
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             }
 
+            .nav-links.active {
+                display: flex;
+                transform: translateY(0);
+                opacity: 1;
+            }
+             .dropdown {
+                width: 100%;
+            }
+
+            .dropdown-content {
+                position: static;
+                background: rgba(0,0,0,0.1);
+                box-shadow: none;
+            }
             .nav-links.active {
                 display: flex;
             }
@@ -401,12 +664,22 @@
                 display: flex;
             }
 
+            .hero {
+                height: 80vh;
+                margin-top: 70px;
+            }
+
             .hero h1 {
                 font-size: 2.5rem;
+                line-height: 1.2;
             }
 
             .hero h2 {
                 font-size: 1.4rem;
+            }
+
+            .section {
+                padding: 3rem 0;
             }
 
             .section h2 {
@@ -415,6 +688,138 @@
 
             .cards {
                 grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .card {
+                padding: 1.5rem;
+            }
+
+            .activity-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .cta-button {
+                padding: 0.8rem 1.5rem;
+                font-size: 1rem;
+            }
+
+            .search-container {
+                order: -1;
+                margin-bottom: 1rem;
+            }
+
+            .search-input.active {
+                width: 100%;
+                position: relative;
+                margin-top: 1rem;
+            }
+
+            .search-results {
+                width: 100%;
+                right: auto;
+                left: 0;
+            }
+
+            /* Mobile login button enhancements */
+            .login-btn {
+                min-width: 100px;
+                padding: 8px 16px;
+                font-size: 0.9rem;
+            }
+
+            .login-arrow {
+                font-size: 0.7rem;
+            }
+
+            .dropdown-content {
+                min-width: 100%;
+                right: 0;
+                left: 0;
+                margin-top: 8px;
+            }
+
+            .dropdown-content a {
+                padding: 14px 16px;
+                margin: 0 4px;
+            }
+
+            .login-icon {
+                font-size: 1.3rem;
+                width: 20px;
+            }
+
+            .login-option-title {
+                font-size: 0.9rem;
+            }
+
+            .login-option-desc {
+                font-size: 0.75rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .hero h2 {
+                font-size: 1.2rem;
+            }
+
+            .section h2 {
+                font-size: 1.8rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .summary-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .card-icon {
+                width: 60px;
+                height: 60px;
+                font-size: 1.5rem;
+            }
+
+            /* Extra small mobile login enhancements */
+            .login-btn {
+                min-width: 80px;
+                padding: 6px 12px;
+                font-size: 0.8rem;
+            }
+
+            .dropdown-content a {
+                padding: 12px 14px;
+                flex-direction: column;
+                text-align: center;
+                gap: 8px;
+            }
+
+            .login-option-text {
+                text-align: center;
+            }
+
+            .login-option-title {
+                font-size: 0.85rem;
+            }
+
+            .login-option-desc {
+                font-size: 0.7rem;
             }
         }
 
@@ -431,74 +836,352 @@
             border: 0;
         }
 
-        /* Focus styles for accessibility */
+        /* Enhanced focus styles for accessibility */
         button:focus,
-        a:focus {
+        a:focus,
+        input:focus,
+        select:focus {
             outline: 3px solid #f39c12;
             outline-offset: 2px;
+            box-shadow: 0 0 0 3px rgba(243, 156, 18, 0.3);
+        }
+
+        /* High contrast mode support */
+        @media (prefers-contrast: high) {
+            .card {
+                border: 2px solid #2c3e50;
+            }
+            
+            .nav-links a {
+                border: 1px solid transparent;
+            }
+            
+            .nav-links a:hover {
+                border-color: #f39c12;
+            }
+        }
+
+        /* Reduced motion support */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* Skip to content link */
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 6px;
+            background: #2c3e50;
+            color: white;
+            padding: 8px;
+            text-decoration: none;
+            border-radius: 4px;
+            z-index: 10000;
+        }
+
+        .skip-link:focus {
+            top: 6px;
+        }
+
+        /* Enhanced dropdown content styling */
+        .dropdown-content a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 20px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            position: relative;
+            border-radius: 8px;
+            margin: 0 8px;
+        }
+
+        .login-icon {
+            font-size: 1.5rem;
+            width: 24px;
+            text-align: center;
+        }
+
+        .login-option-text {
+            flex: 1;
+        }
+
+        .login-option-title {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 2px;
+            font-size: 0.95rem;
+        }
+
+        .login-option-desc {
+            font-size: 0.8rem;
+            color: #7f8c8d;
+            line-height: 1.3;
+        }
+
+        .dropdown-content a:hover .login-option-title {
+            color: white;
+        }
+
+        .dropdown-content a:hover .login-option-desc {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        /* Search functionality */
+        .search-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-toggle {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .search-toggle:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: scale(1.1);
+        }
+
+        .search-input {
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0;
+            padding: 0;
+            border: none;
+            background: rgba(255, 255, 255, 0.95);
+            color: #2c3e50;
+            border-radius: 25px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .search-input.active {
+            width: 250px;
+            padding: 10px 20px;
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .search-input:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.3);
+        }
+
+        .search-results {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            width: 300px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            margin-top: 8px;
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+        }
+
+        .search-results.active {
+            display: block;
+        }
+
+        .search-result-item {
+            padding: 12px 20px;
+            border-bottom: 1px solid #ecf0f1;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .search-result-item:hover {
+            background: #f8f9fa;
+        }
+
+        .search-result-item:last-child {
+            border-bottom: none;
+        }
+
+        .search-result-title {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 4px;
+        }
+
+        .search-result-description {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+        }
+
+        /* Notification system */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            padding: 16px 20px;
+            z-index: 10000;
+            transform: translateX(400px);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            max-width: 350px;
+            border-left: 4px solid #3498db;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            border-left-color: #27ae60;
+        }
+
+        .notification.warning {
+            border-left-color: #f39c12;
+        }
+
+        .notification.error {
+            border-left-color: #e74c3c;
+        }
+
+        .notification-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .notification-icon {
+            font-size: 1.5rem;
+        }
+
+        .notification-text {
+            flex: 1;
+        }
+
+        .notification-title {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 4px;
+        }
+
+        .notification-message {
+            font-size: 0.9rem;
+            color: #7f8c8d;
         }
     </style>
 </head>
 
 <body>
+    <a href="#main" class="skip-link">Skip to main content</a>
     <header>
         <nav class="container">
-            <div class="logo">Protexa</div>
+            <div class="logo"><a href="index.html">Drop Shield</a></div>
             <ul class="nav-links">
                 <li><a href="#home">Home</a></li>
                 <li><a href="#about">About</a></li>
-                <li><a href="#contact">Contact</a></li>
                 <li><a href="#partnerships">Partnerships</a></li>
-                <li><a href="Login.html">Login</a></li>
-                <li><a href="GovLogin.html">Government Login</a></li>
+                <li><a href="#contact">Contact</a></li>
+                <li class="search-container">
+                    <button class="search-toggle" onclick="toggleSearch()" aria-label="Toggle search">
+                        🔍
+                    </button>
+                    <input type="text" class="search-input" placeholder="Search..." id="searchInput">
+                    <div class="search-results" id="searchResults"></div>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="nav-links" onclick="handleLoginClick(event)" aria-haspopup="true" aria-expanded="false">
+                        Login 
+                    </a>
+                    <div class="dropdown-content">
+                        <a href="GovLogin.html" onclick="handleLoginOptionClick(event, 'Government')">
+                            <span class="login-icon">🏛️</span>
+                            <div class="login-option-text">
+                                <div class="login-option-title">Government Login</div>
+                                <div class="login-option-desc">Access government dashboard</div>
+                            </div>
+                        </a>
+                        <a href="RegionLogin.html" onclick="handleLoginOptionClick(event, 'Region Government')">
+                            <span class="login-icon">🏢</span>
+                            <div class="login-option-text">
+                                <div class="login-option-title">Region-govt Login</div>
+                                <div class="login-option-desc">Regional government access</div>
+                            </div>
+                        </a>
+                        <a href="InstitutionLogin.html" onclick="handleLoginOptionClick(event, 'Institution')">
+                            <span class="login-icon">🎓</span>
+                            <div class="login-option-text">
+                                <div class="login-option-title">Institution Login</div>
+                                <div class="login-option-desc">Educational institutions</div>
+                            </div>
+                        </a>
+                        <a href="MentorLogin.html" onclick="handleLoginOptionClick(event, 'Mentor')">
+                            <span class="login-icon">👨‍🏫</span>
+                            <div class="login-option-text">
+                                <div class="login-option-title">Mentor Login</div>
+                                <div class="login-option-desc">Mentor portal access</div>
+                            </div>
+                        </a>
+                    </div>
+                </li>
             </ul>
-            <div class="menu-toggle" onclick="toggleMenu()">
+            <button class="menu-toggle" onclick="toggleMenu()" aria-label="Toggle navigation menu" aria-expanded="false">
                 <span></span>
                 <span></span>
                 <span></span>
-            </div>
+            </button>
         </nav>
     </header>
 
-    <main>
+    <main id="main">
         <section id="home" class="hero">
             <div class="slideshow">
-                <div class="slide active" style="background-image: url('images/image1.png')"></div>
-                <div class="slide" style="background-image: url('images/image2.png')"></div>
-                <div class="slide" style="background-image: url('images/image3.png')"></div>
-                <div class="slide" style="background-image: url('images/image4.png')"></div>
+                <div class="slide active" style="background-image: url('images/img1.jpeg')"></div>
+                <div class="slide" style="background-image: url('images/img2.jpeg')"></div>
+                <div class="slide" style="background-image: url('images/img3.jpeg')"></div>
             </div>
             <div class="hero-content">
-                <h1>The Beacon of Disability Inclusion</h1>
-                <h2>For Singapore and Beyond</h2>
-                <a href="#about" class="cta-button">Discover More</a>
+                <h1>Proactive Mentor: Shifting from Reactive to Proactive Student Support</h1>
+                <h2>An early warning system to prevent student dropouts through data-driven insights.</h2>
+                <a href="#about" class="cta-button" onclick="showLoading(this)">Discover More</a>
             </div>
         </section>
 
         <section id="about" class="section">
             <div class="container">
-                <h2>Welcome to Enabling Village</h2>
-                <p>A vibrant hub for inclusive dining, wellness, and retail—celebrating diverse abilities and fostering
-                    sustainable, empowered communities.</p>
+                <h2>Welcome to Drop Shield</h2>
+                <p>A tech hub Empowering Governance, Regions, and Institutions to avoid dropouts of education Institutions</p>
 
                 <div class="cards">
                     <div class="card fade-in">
-                        <div class="card-icon">🏢</div>
-                        <h3>Inclusive Spaces</h3>
-                        <p>Our thoughtfully designed spaces ensure accessibility for everyone, creating environments
-                            where all abilities are celebrated and supported.</p>
-                    </div>
-                    <div class="card fade-in">
                         <div class="card-icon">🤝</div>
-                        <h3>Community Connection</h3>
-                        <p>We bring together diverse communities, fostering understanding and creating lasting
-                            connections between people of all abilities.</p>
+                        <h3>Collaborative Ecosystem</h3>
+                        <p>Facilitate seamless communication and collaboration between mentors, teachers, parents, and administrative staff to create a unified support network for every student.</p>
                     </div>
                     <div class="card fade-in">
-                        <div class="card-icon">💡</div>
-                        <h3>Innovation Hub</h3>
-                        <p>A collaborative space for co-creation and prototyping, unlocking possibilities through
-                            partnerships that empower persons with disabilities.</p>
+                        <div class="card-icon">🧠</div>
+                        <h3>Data-Driven Insights</h3>
+                        <p>Leverage powerful analytics to predict student dropout risks, providing educators with the insights they need to intervene effectively and on time.</p>
+                    </div>
+                    <div class="card fade-in">
+                        <div class="card-icon">📈</div>
+                        <h3>Predictive Analytics</h3>
+                        <p>Utilize machine learning models to identify emerging trends in student performance and behavior, enabling institutions to deploy targeted support and resources.</p>
                     </div>
                 </div>
             </div>
@@ -506,33 +1189,33 @@
 
         <section id="activities" class="section activities">
             <div class="container">
-                <h2>What's On</h2>
-                <p>Connecting communities and celebrating diverse abilities through inclusive experiences</p>
+                <h2>Key Features</h2>
+                <p>A comprehensive suite of tools designed to transform student support from reactive to proactive.</p>
 
                 <div class="activity-grid">
                     <div class="activity-item">
-                        <h3>🎨 Creative Workshops</h3>
-                        <p>Art, music, and craft sessions designed for all abilities</p>
+                        <h3>📊 Student Dashboard</h3>
+                        <p>A personalized view of student progress, academic performance, and risk factors.</p>
                     </div>
                     <div class="activity-item">
-                        <h3>🏃‍♀️ Adaptive Sports</h3>
-                        <p>Inclusive sporting activities and fitness programs</p>
+                        <h3>🚨 Early Warning System</h3>
+                        <p>Automated alerts for at-risk students based on customizable academic and behavioral metrics.</p>
                     </div>
                     <div class="activity-item">
-                        <h3>🎭 Cultural Events</h3>
-                        <p>Performances and celebrations showcasing diverse talents</p>
+                            <h3>🤖 AI-Powered Mentorship</h3>
+                        <p>AI assistance to help mentors and teachers develop personalized intervention strategies.</p>
                     </div>
                     <div class="activity-item">
-                        <h3>🧠 Skills Training</h3>
-                        <p>Professional development and life skills workshops</p>
+                        <h3>💬 Communication Hub</h3>
+                        <p>Integrated tools for secure messaging and progress updates with students and parents.</p>
                     </div>
                     <div class="activity-item">
-                        <h3>🍽️ Community Dining</h3>
-                        <p>Shared meals and cooking experiences for everyone</p>
+                        <h3>📚 Resource Library</h3>
+                        <p>A curated collection of educational and support resources tailored to student needs.</p>
                     </div>
                     <div class="activity-item">
-                        <h3>💼 Employment Fair</h3>
-                        <p>Job opportunities and career guidance sessions</p>
+                        <h3>�️ Dropout Mapping</h3>
+                        <p>Visualize dropout hotspots and demographic patterns to inform regional policies and support programs.</p>
                     </div>
                 </div>
             </div>
@@ -540,27 +1223,25 @@
 
         <section id="tenants" class="section section-alt">
             <div class="container">
-                <h2>Our Tenants</h2>
-                <p>Celebrate with our partner enterprises to advance disability inclusion</p>
+                <h2>Empowering Our Partners</h2>
+                <p>Proactive Mentor is trusted by leading institutions and organizations committed to student success.</p>
 
                 <div class="cards">
                     <div class="card">
-                        <div class="card-icon">🍕</div>
-                        <h3>Inclusive Dining</h3>
+                        <div class="card-icon">🏛️</div>
+                        <h3>Government Agencies</h3>
                         <p>Restaurants and cafes that provide employment opportunities and accessible dining experiences
                             for everyone.</p>
                     </div>
                     <div class="card">
-                        <div class="card-icon">🛍️</div>
-                        <h3>Social Enterprises</h3>
-                        <p>Retail spaces showcasing products created by persons with disabilities, supporting
-                            entrepreneurship and creativity.</p>
+                        <div class="card-icon">🏢</div>
+                        <h3>Regional Authorities</h3>
+                        <p>Collaborating with regional governments to identify and address systemic issues leading to student dropouts.</p>
                     </div>
                     <div class="card">
-                        <div class="card-icon">💆‍♀️</div>
-                        <h3>Wellness Services</h3>
-                        <p>Health and wellness services designed with accessibility in mind, promoting well-being for
-                            all community members.</p>
+                        <div class="card-icon">🎓</div>
+                        <h3>Educational Institutions</h3>
+                        <p>Partnering with schools, colleges, and universities to provide them with the tools to reduce dropout rates and enhance student retention.</p>
                     </div>
                 </div>
             </div>
@@ -572,19 +1253,19 @@
                 <div class="stats-grid">
                     <div class="stat-item">
                         <h3 id="counter1">500+</h3>
-                        <p>Community Members Served</p>
+                        <p>Institutions Onboarded</p>
                     </div>
                     <div class="stat-item">
                         <h3 id="counter2">50+</h3>
-                        <p>Partner Organizations</p>
+                        <p>Students Supported</p>
                     </div>
                     <div class="stat-item">
                         <h3 id="counter3">200+</h3>
-                        <p>Employment Opportunities Created</p>
+                        <p>Average Dropout Rate Reduction</p>
                     </div>
                     <div class="stat-item">
                         <h3 id="counter4">1000+</h3>
-                        <p>Events & Activities Hosted</p>
+                        <p>Mentors Empowered</p>
                     </div>
                 </div>
             </div>
@@ -592,28 +1273,24 @@
 
         <section id="partnerships" class="section">
             <div class="container">
-                <h2>Partnerships</h2>
-                <p>A collaborative space for co-creation and prototyping – unlocking the possibilities of partnerships
-                    that empower persons with disabilities through inclusive services, experiences and prototypes.</p>
+                <h2>About Us</h2>
+                <p>We are a dedicated team of educators, data scientists, and technologists committed to building a brighter future for students by preventing academic disengagement and dropouts.</p>
 
                 <div class="cards">
                     <div class="card">
-                        <div class="card-icon">🏛️</div>
-                        <h3>Government Agencies</h3>
-                        <p>Working with public sector organizations to develop inclusive policies and programs that
-                            benefit the disability community.</p>
+                        <div class="card-icon">💡</div>
+                        <h3>Our Vision</h3>
+                        <p>To create a world where every student has the support they need to succeed and reach their full potential, regardless of their circumstances.</p>
                     </div>
                     <div class="card">
-                        <div class="card-icon">🏢</div>
-                        <h3>Corporate Partners</h3>
-                        <p>Collaborating with businesses to create inclusive workplaces and accessible products and
-                            services.</p>
+                        <div class="card-icon">🎯</div>
+                        <h3>Our Mission</h3>
+                        <p>To provide cutting-edge, accessible technology that empowers educators and institutions to proactively identify, support, and mentor students at risk of dropping out.</p>
                     </div>
                     <div class="card">
-                        <div class="card-icon">🎓</div>
-                        <h3>Educational Institutions</h3>
-                        <p>Partnering with schools and universities to promote inclusive education and research
-                            initiatives.</p>
+                        <div class="card-icon">🌐</div>
+                        <h3>Our Global Reach</h3>
+                        <p>While our roots are in India, we aim to expand our impact globally, tailoring our solution to meet the unique challenges of different educational systems worldwide.</p>
                     </div>
                 </div>
             </div>
@@ -625,35 +1302,34 @@
             <div class="footer-content">
                 <div class="footer-section">
                     <h3>Contact Us</h3>
-                    <p>📍 20 Lengkok Bahru, Singapore 159053</p>
-                    <p>📞 +65 6123 4567</p>
-                    <p>✉️ info@enablingvillage.sg</p>
+                    <p>📍 20 hyderabad, India 500072</p>
+                    <p>📞 +91 79445 67890</p>
+                    <p>✉️ info@dropshield.in</p>
                 </div>
                 <div class="footer-section">
                     <h3>Quick Links</h3>
                     <a href="#about">About Us</a>
                     <a href="#activities">What's On</a>
-                    <a href="#tenants">Our Tenants</a>
-                    <a href="#partnerships">Partnerships</a>
+                    <a href="#tenants">Partners</a>
+                    <a href="#partnerships">Our Story</a>
                 </div>
                 <div class="footer-section">
                     <h3>Get Involved</h3>
-                    <a href="#">Volunteer Opportunities</a>
-                    <a href="#">Donate</a>
-                    <a href="#">Partner With Us</a>
+                    <a href="#">Join Our Team</a>
+                    <a href="#">Request a Demo</a>
+                    <a href="#">Become a Partner</a>
                     <a href="#">Newsletter</a>
                 </div>
                 <div class="footer-section">
                     <h3>Resources</h3>
-                    <a href="#">Accessibility Guide</a>
-                    <a href="#">Support Services</a>
-                    <a href="#">Community Programs</a>
+                    <a href="#">Case Studies</a>
+                    <a href="#">Blog</a>
                     <a href="#">FAQ</a>
+                    <a href="#">Privacy Policy</a>
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2024 Enabling Village Singapore. All rights reserved. | A beacon of disability inclusion for
-                    Singapore and beyond.</p>
+                <p>© 2025 Proactive Mentor. All rights reserved.</p>
             </div>
         </div>
     </footer>
@@ -662,8 +1338,48 @@
         // Mobile menu toggle
         function toggleMenu() {
             const navLinks = document.querySelector('.nav-links');
+            const menuToggle = document.querySelector('.menu-toggle');
+            const isActive = navLinks.classList.contains('active');
+            
             navLinks.classList.toggle('active');
+            menuToggle.classList.toggle('active');
+            menuToggle.setAttribute('aria-expanded', !isActive);
+            
+            // Prevent body scroll when menu is open
+            if (!isActive) {
+                document.body.style.overflow = 'hidden';
+            } else {
+                document.body.style.overflow = '';
+            }
         }
+
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const navLinks = document.querySelector('.nav-links');
+            const menuToggle = document.querySelector('.menu-toggle');
+            
+            if (navLinks.classList.contains('active') && 
+                !navLinks.contains(event.target) && 
+                !menuToggle.contains(event.target)) {
+                navLinks.classList.remove('active');
+                menuToggle.classList.remove('active');
+                menuToggle.setAttribute('aria-expanded', 'false');
+                document.body.style.overflow = '';
+            }
+        });
+
+        // Close mobile menu when clicking on nav links
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', function() {
+                const navLinks = document.querySelector('.nav-links');
+                const menuToggle = document.querySelector('.menu-toggle');
+                
+                navLinks.classList.remove('active');
+                menuToggle.classList.remove('active');
+                menuToggle.setAttribute('aria-expanded', 'false');
+                document.body.style.overflow = '';
+            });
+        });
 
         // Smooth scrolling
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -770,6 +1486,15 @@
         function startSlideshow() {
             const slides = document.querySelectorAll('.slide');
             let currentSlide = 0;
+            slides.forEach(slide => {
+            const bgImage = new Image();
+            bgImage.onerror = () => {
+                slide.classList.add('error');
+                console.error('Failed to load image:', slide.style.backgroundImage);
+            };
+                const url = slide.style.backgroundImage.replace(/url\(['"](.+)['"]\)/, '$1');
+                bgImage.src = url;
+            });
 
             function nextSlide() {
                 slides[currentSlide].classList.remove('active');
@@ -782,6 +1507,314 @@
 
         // Call the function when the page loads
         document.addEventListener('DOMContentLoaded', startSlideshow);
+
+        // Loading state for CTA button
+        function showLoading(button) {
+            const originalText = button.textContent;
+            button.innerHTML = '<span class="loading-spinner"></span> Loading...';
+            button.style.pointerEvents = 'none';
+            
+            setTimeout(() => {
+                button.textContent = originalText;
+                button.style.pointerEvents = 'auto';
+            }, 2000);
+        }
+
+        // Enhanced card hover effects
+        document.querySelectorAll('.card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-10px) scale(1.02)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+
+        // Set active navigation state based on current section
+        function setActiveNavLink() {
+            const sections = document.querySelectorAll('section[id]');
+            const navLinks = document.querySelectorAll('.nav-links a[href^="#"]');
+            
+            // Remove active class from all nav links
+            navLinks.forEach(link => link.classList.remove('active'));
+            
+            // Find current section
+            let currentSection = '';
+            sections.forEach(section => {
+                const rect = section.getBoundingClientRect();
+                if (rect.top <= 100 && rect.bottom >= 100) {
+                    currentSection = section.id;
+                }
+            });
+            
+            // Add active class to current nav link
+            if (currentSection) {
+                const activeLink = document.querySelector(`.nav-links a[href="#${currentSection}"]`);
+                if (activeLink) {
+                    activeLink.classList.add('active');
+                }
+            }
+        }
+
+        // Update active nav link on scroll
+        window.addEventListener('scroll', setActiveNavLink);
+        
+        // Set initial active state
+        document.addEventListener('DOMContentLoaded', setActiveNavLink);
+
+        // Search functionality
+        const searchData = [
+            { title: "About Us", description: "Learn about Enabling Village and our mission", url: "#about" },
+            { title: "Partnerships", description: "Collaborate with us for inclusive initiatives", url: "#partnerships" },
+            { title: "Contact", description: "Get in touch with our team", url: "#contact" },
+            { title: "Government Login", description: "Access government dashboard", url: "GovLogin.html" },
+            { title: "Institution Login", description: "Login for educational institutions", url: "InstitutionLogin.html" },
+            { title: "Inclusive Spaces", description: "Accessible environments for everyone", url: "#about" },
+            { title: "Community Connection", description: "Building diverse communities", url: "#about" },
+            { title: "Innovation Hub", description: "Collaborative space for co-creation", url: "#about" },
+            { title: "Creative Workshops", description: "Art, music, and craft sessions", url: "#activities" },
+            { title: "Adaptive Sports", description: "Inclusive sporting activities", url: "#activities" },
+            { title: "Cultural Events", description: "Performances and celebrations", url: "#activities" },
+            { title: "Skills Training", description: "Professional development workshops", url: "#activities" }
+        ];
+
+        function toggleSearch() {
+            const searchInput = document.getElementById('searchInput');
+            const searchResults = document.getElementById('searchResults');
+            
+            if (searchInput.classList.contains('active')) {
+                searchInput.classList.remove('active');
+                searchResults.classList.remove('active');
+                searchInput.value = '';
+                searchInput.blur();
+            } else {
+                searchInput.classList.add('active');
+                searchInput.focus();
+            }
+        }
+
+        function performSearch(query) {
+            const searchResults = document.getElementById('searchResults');
+            
+            if (query.length < 2) {
+                searchResults.classList.remove('active');
+                return;
+            }
+
+            const results = searchData.filter(item => 
+                item.title.toLowerCase().includes(query.toLowerCase()) ||
+                item.description.toLowerCase().includes(query.toLowerCase())
+            );
+
+            if (results.length > 0) {
+                searchResults.innerHTML = results.map(item => `
+                    <div class="search-result-item" onclick="navigateToResult('${item.url}')">
+                        <div class="search-result-title">${item.title}</div>
+                        <div class="search-result-description">${item.description}</div>
+                    </div>
+                `).join('');
+                searchResults.classList.add('active');
+            } else {
+                searchResults.innerHTML = '<div class="search-result-item">No results found</div>';
+                searchResults.classList.add('active');
+            }
+        }
+
+        function navigateToResult(url) {
+            const searchInput = document.getElementById('searchInput');
+            const searchResults = document.getElementById('searchResults');
+            
+            searchInput.classList.remove('active');
+            searchResults.classList.remove('active');
+            searchInput.value = '';
+            
+            if (url.startsWith('#')) {
+                document.querySelector(url).scrollIntoView({ behavior: 'smooth' });
+            } else {
+                window.location.href = url;
+            }
+        }
+
+        // Search event listeners
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            performSearch(e.target.value);
+        });
+
+        // Close search when clicking outside
+        document.addEventListener('click', function(event) {
+            const searchContainer = document.querySelector('.search-container');
+            const searchResults = document.getElementById('searchResults');
+            
+            if (!searchContainer.contains(event.target)) {
+                document.getElementById('searchInput').classList.remove('active');
+                searchResults.classList.remove('active');
+            }
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Ctrl/Cmd + K to open search
+            if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                e.preventDefault();
+                toggleSearch();
+            }
+            
+            // Escape to close search
+            if (e.key === 'Escape') {
+                const searchInput = document.getElementById('searchInput');
+                const searchResults = document.getElementById('searchResults');
+                searchInput.classList.remove('active');
+                searchResults.classList.remove('active');
+                searchInput.blur();
+            }
+        });
+
+        // Enhanced Login Button Functionality
+        function handleLoginClick(event) {
+            event.preventDefault();
+            const dropdown = event.target.closest('.dropdown');
+            const dropdownContent = dropdown.querySelector('.dropdown-content');
+            const loginLink = dropdown.querySelector('a.nav-links'); // Target the new <a> tag
+            const isOpen = loginLink.getAttribute('aria-expanded') === 'true';
+
+            // Toggle dropdown state
+            if (isOpen) {
+                closeLoginDropdown();
+            } else {
+                openLoginDropdown();
+            }
+        }
+
+        function openLoginDropdown() {
+            const dropdown = document.querySelector('.dropdown');
+            const dropdownContent = dropdown.querySelector('.dropdown-content');
+            const loginLink = dropdown.querySelector('a.nav-links');
+
+            dropdownContent.style.display = 'block';
+            loginLink.setAttribute('aria-expanded', 'true');
+
+            // Animate dropdown opening
+            setTimeout(() => {
+                dropdownContent.style.opacity = '1';
+                dropdownContent.style.transform = 'translateY(0) scale(1)';
+            }, 10);
+        }
+
+        function closeLoginDropdown() {
+            const dropdown = document.querySelector('.dropdown');
+            const dropdownContent = dropdown.querySelector('.dropdown-content');
+            const loginLink = dropdown.querySelector('a.nav-links');
+
+            dropdownContent.style.opacity = '0';
+            dropdownContent.style.transform = 'translateY(-10px) scale(0.95)';
+
+            setTimeout(() => {
+                dropdownContent.style.display = 'none';
+                loginLink.setAttribute('aria-expanded', 'false');
+            }, 300);
+        }
+
+        function handleLoginOptionClick(event, loginType) {
+            event.preventDefault();
+
+            const dropdown = event.target.closest('.dropdown');
+            const loginLink = dropdown.querySelector('a.nav-links');
+            
+            // Animate the login link to a loading state
+            loginLink.textContent = 'Logging in...';
+            loginLink.style.pointerEvents = 'none';
+
+            // Show notification
+            showNotification('info', 'Redirecting...', `Taking you to ${loginType} login page`);
+
+            // Simulate loading delay
+            setTimeout(() => {
+                // Navigate to the login page
+                window.location.href = event.target.closest('a').href;
+            }, 1500);
+        }
+
+        // Notification system
+        function showNotification(type, title, message) {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            
+            const icons = {
+                success: '✅',
+                warning: '⚠️',
+                error: '❌',
+                info: 'ℹ️'
+            };
+            
+            notification.innerHTML = `
+                <div class="notification-content">
+                    <div class="notification-icon">${icons[type] || icons.info}</div>
+                    <div class="notification-text">
+                        <div class="notification-title">${title}</div>
+                        <div class="notification-message">${message}</div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Show notification
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 100);
+            
+            // Auto-hide after 4 seconds
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }, 4000);
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const dropdown = document.querySelector('.dropdown');
+            const loginLink = dropdown.querySelector('a.nav-links');
+            const dropdownContent = dropdown.querySelector('.dropdown-content');
+            
+            if (!dropdown.contains(event.target) && loginLink.getAttribute('aria-expanded') === 'true') {
+                closeLoginDropdown();
+            }
+        });
+
+        // Keyboard navigation for dropdown
+        document.addEventListener('keydown', function(e) {
+            const dropdown = document.querySelector('.dropdown');
+            const loginLink = dropdown.querySelector('a.nav-links');
+            const dropdownContent = dropdown.querySelector('.dropdown-content');
+            
+            if (e.key === 'Enter' || e.key === ' ') {
+                if (document.activeElement === loginLink) {
+                    e.preventDefault();
+                    handleLoginClick(e);
+                }
+            }
+            
+            if (e.key === 'Escape' && loginLink.getAttribute('aria-expanded') === 'true') {
+                closeLoginDropdown();
+                loginLink.focus();
+            }
+        });
+
+        // Add hover effects for better UX
+        document.querySelectorAll('.dropdown-content a').forEach(link => {
+            link.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateX(5px)';
+            });
+            
+            link.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateX(0)';
+            });
+        });
     </script>
 </body>
 
